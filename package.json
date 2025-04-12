@@ -1,0 +1,22 @@
+{
+  "name": "devdosti-backend",
+  "version": "1.0.0",
+  "description": "devdosti backend",
+  "keywords": [
+    "nodejs",
+    "javascript",
+    "backend"
+  ],
+  "license": "ISC",
+  "author": "Bhuva Bhavik",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start":"node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.9"
+  }
+}
