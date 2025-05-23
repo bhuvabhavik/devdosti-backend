@@ -17,7 +17,7 @@
 |--------|------------------------|------------------------------|
 | GET    | `/profile/view`        | View your profile            |
 | PATCH  | `/profile/edit`        | Edit profile details         |
-| PATCH  | `/profile/password`    | Change profile password      |
+| PATCH  | `/profile/changePassword`    | Change profile password      | hw
 
 ---
 
