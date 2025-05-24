@@ -39,11 +39,11 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
 profileRouter.patch("/profile/changePassword", userAuth, async (req, res) => {
   try {
     const user = req.user;
-    currentPassword = req.body.currentPassword;
+    const currentPassword = req.body.currentPassword;
     hashedPasswordFromDB = user.password;
 
     isCurrentPasswordCorrect = await bcrypt.compare(
-      currentPassword,
+      currentPassword, 
       hashedPasswordFromDB
     );
 
@@ -56,13 +56,13 @@ profileRouter.patch("/profile/changePassword", userAuth, async (req, res) => {
 
     const passwordHash = await bcrypt.hash(req.body.newPassword, 10);
     user.password = passwordHash;
-    user.save();
+    await user.save();
 
     res.send("Password changed successfully.")
 
 
   } catch (err) {
-    res.send("Error : " + err.message);
+ res.status(400).send("Error: " + err.message);
   }
 });
 
