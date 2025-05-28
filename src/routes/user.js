@@ -1,7 +1,7 @@
 const express = require("express");
 const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
-const connectDB = require("../config/database");
+const User = require("../models/user");
 const userRouter = express.Router();
 
 // get all the pending connection requests for the logged in user.
@@ -74,6 +74,52 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
     });
   } catch (err) {
     res.status(404).send("Error : " + err.message);
+  }
+});
+
+userRouter.get("/user/feed", userAuth, async (req, res) => {
+  try {
+    // user should see all cards except:  
+    // his own card.
+    // his connections
+    // ignored people
+    // already sent the connection request
+
+    const loggedInUser = req.user;
+
+    const page = parseInt(req.query.page) || 1; // for pagination
+    let limit = parseInt(req.query.limit) || 3;
+    limit = limit > 50 ? 50 : limit;
+    const skip = (page-1)*limit;
+
+    // find all connection request that either user has sent/received
+    const connectionRequests = await ConnectionRequest.find({
+      $or:[
+        {fromUserId:loggedInUser._id},
+        {toUserId:loggedInUser._id}
+      ]
+    }).select("fromUserId toUserId");
+    // .populate("fromUserId","firstName").populate("toUserId","firstName");
+
+    // set is like and array, we can push in elements, but it cant store duplicates, always a unique
+    const hideUserFromFeed = new Set();
+
+    connectionRequests.forEach((req)=>{
+      hideUserFromFeed.add(req.fromUserId.toString());
+      hideUserFromFeed.add(req.toUserId.toString());
+    })
+
+    const users = await User.find({
+      $and:[
+        {_id:{$nin:Array.from(hideUserFromFeed)}},
+        {_id:{$ne:loggedInUser._id}}
+      ]
+    }).select("firstName lastName photoUrl age skills about").limit(limit).skip(skip);
+    
+    res.send(users);
+
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 });
 
