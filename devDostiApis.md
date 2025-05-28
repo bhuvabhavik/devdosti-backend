@@ -35,8 +35,8 @@
 
 | Method | Endpoint            | Description                                    |
 | ------ | ------------------- | ---------------------------------------------- |
+| GET    | `/user/requests/received`    | View incoming/outgoing connection requests     |
 | GET    | `/user/connections` | Get list of all accepted connections           |
-| GET    | `/user/requests`    | View incoming/outgoing connection requests     |
 | GET    | `/user/feed`        | Browse other profiles (like/dislike mechanism) |
 
 ---
