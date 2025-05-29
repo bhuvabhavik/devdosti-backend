@@ -6,7 +6,10 @@ require("dotenv").config();
 const secretKey = process.env.SECRET_KEY;
 var cors = require('cors')
 
-app.use(cors())
+app.use(cors({
+  origin:"http://localhost:5173",
+  credentials : true
+}))
 app.use(express.json()); // converts response from json to js object so we can access it.
 app.use(cookieParser());
 
