@@ -114,9 +114,9 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
         {_id:{$nin:Array.from(hideUserFromFeed)}},
         {_id:{$ne:loggedInUser._id}}
       ]
-    }).select("firstName lastName photoUrl age skills about").limit(limit).skip(skip);
+    }).select("firstName lastName photoUrl age skills about gender").limit(limit).skip(skip);
     
-    res.send(users);
+    res.json({data :users});
 
   } catch (err) {
     res.status(400).json({ message: err.message });

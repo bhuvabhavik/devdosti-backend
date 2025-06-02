@@ -43,10 +43,10 @@ const userSchema = mongoose.Schema({
         type: Number,
         min : 18,
     },
-    gender : {
+    gender : { 
         type : String,
         validate(value){ // only called when new doc created, not while update.
-            if(!["male","female","others"].includes(value)){
+            if(!["Male","Female","Others"].includes(value)){
                 throw new Error("Gender data is not valid. ")
             }
         }
