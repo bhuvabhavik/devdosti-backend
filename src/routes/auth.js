@@ -5,15 +5,12 @@
 // | POST   | `/login`         | Authenticate a user |
 // | POST   | `/logout`        | Log out the current user |
 
-
 const express = require("express");
 const authRouter = express.Router();
 const { validateSignUpData } = require("../utils/validation");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 var validator = require("validator");
-
-
 
 authRouter.post("/signup", async (req, res) => {
   //VALIDATION OF DATA
@@ -32,11 +29,18 @@ authRouter.post("/signup", async (req, res) => {
 
   try {
     const isEmailValid = validator.isEmail(req.body.emailId); //=> true
-    console.log(isEmailValid);
+    // console.log(isEmailValid);
 
     if (isEmailValid) {
-      await user.save();
-      res.send("data added successfully.");
+      const savedUser = await user.save();
+      const token = await savedUser.getJWT();
+
+      // add token to cookie and send the response back to the user/client
+      res.cookie("token", token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
+      res.json({ message: "data added successfully.", data: savedUser });
     } else {
       res.send("enter valid email.");
     }
@@ -54,13 +58,16 @@ authRouter.post("/login", async (req, res) => {
       throw new Error("invalid credentials!");
     }
 
-    const isPasswordValid = await user.validatePassword(password)
+    const isPasswordValid = await user.validatePassword(password);
     if (isPasswordValid) {
       // create a jwt token
       const token = await user.getJWT();
 
       // add token to cookie and send the response back to the user/client
-      res.cookie("token", token,{httpOnly : true ,expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)});
+      res.cookie("token", token, {
+        httpOnly: true,
+        expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      });
       // res.send("User Login Successful.");
       res.send(user);
     } else {
@@ -71,13 +78,14 @@ authRouter.post("/login", async (req, res) => {
   }
 });
 
-authRouter.post("/logout", (req,res)=>{
-    // cleanup activities.. if have some sessions etc..
+authRouter.post("/logout", (req, res) => {
+  // cleanup activities.. if have some sessions etc..
 
+  res
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+    })
+    .send("User logged out successfully.");
+});
 
-    res.cookie("token",null,{
-        expires: new Date(Date.now())
-    }).send("User logged out successfully."); 
-})
- 
-module.exports = authRouter
+module.exports = authRouter;
