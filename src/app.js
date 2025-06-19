@@ -10,6 +10,7 @@ var cors = require('cors')
 
 const allowedOrigins = [
   'https://devdosti1.bhuvabhavik.com',
+  'https://devdosti.bhuvabhavik.com',
   'http://localhost:5173/'
 ];
 
